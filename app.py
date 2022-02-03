@@ -20,10 +20,10 @@ import streamlit.components.v1 as components
 st.set_page_config(
     page_title="Entscheidungsbaum Generator",
     page_icon=":deciduous_tree:",
-    layout="wide",
+  #  layout="wide",
     )
 st.title("Entscheidungsbaum Generator :deciduous_tree:")
-    
+
 ## sidebar
 st.sidebar.title("Konfiguration")
 rand_depth = 2
@@ -94,11 +94,11 @@ y = df.iloc[:,0].values
 test_size = (100-option_split)/100
 if (test_size == 0):
     test_size = 0.01
-if (option_depth == 0):
-    option_depth = None
 if (option_depth <= 5) & (option_depth > 0):
     dtree_height = 750
     dtree_width = 1400
+if (option_depth == 0):
+    option_depth = None
 else:
     dtree_height = 1080
     dtree_width = 1920
@@ -123,7 +123,7 @@ st.markdown("***")
 label_acc = st.sidebar.text("Vorhersagegenauigkeit: {0:.1%}".format(dtree.score(X_test, y_test)))
 print("Die durchschnittliche Vorhersagegenauigkeit des Modells beträgt ca. {0:.1%}".format(dtree.score(X_test, y_test)))
 
-check_detail = st.checkbox("Detailansicht", help="Zeigt die Verteilungen und Histogramme an.")
+check_detail = st.checkbox("Detailansicht", help="Zeigt die Verteilungen und Histogramme an. Kann je nach Baumtiefe einige Sekunden dauern.")
 
 def st_dtree(plot, height=None, width=None):
     dtree_html = f"<body>{viz.svg()}</body>"
@@ -149,9 +149,11 @@ if (check_detail):
                        "highlight":"darkgreen"})
     #st.image(viz._repr_svg_(), use_column_width=True)
     st_dtree(viz, dtree_height, dtree_width)
-    btn_view = st.button(label="Im neuen Tab öffnen")
-    if (btn_view):
-        view_tab(viz)
+    
+    ## does not work at remote
+ #	btn_view = st.button(label="Im neuen Tab öffnen")
+  #  if (btn_view):
+   #     view_tab(viz)
     st.markdown("***")
     
 
@@ -197,11 +199,12 @@ mapping_dict = {
     'Zweck': {'neues Auto': 0, 'Gebrauchtwagen': 1, 'Möbel': 2, 'Radio/TV': 3, 'Haushaltsgeräte': 4, 'Reparaturen': 5, 'Urlaub': 6, 'Fortbildung': 8, 'Business': 9, 'Sonstiges': 10},
     }
 
+df_test
 
-df_test = df_test.replace(to_replace=mapping_dict, value=None)
+#df_test = df_test.replace(to_replace=mapping_dict)
 
-result = np.argmax(dtree.predict_proba(df_test.replace(to_replace=mapping_dict, value=None).values[:, 1:]))
-risk = dtree.predict_proba(df_test.replace(to_replace=mapping_dict, value=None).values[:, 1:])[:, result]
+result = np.argmax(dtree.predict_proba(df_test.replace(to_replace=mapping_dict).values[:, 1:]))
+risk = dtree.predict_proba(df_test.replace(to_replace=mapping_dict).values[:, 1:])[:, result]
 if (result == 0):
     result_str = "abgelehnt"
     risk_str = "sehr hohes"
